@@ -1,0 +1,21 @@
+{
+  "name": "miniapp-web-js",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "vk": "vk-tunnel --insecure=1 --http-protocol=http --ws-protocol=ws --host=localhost --port=5173 --timeout=50000",
+    "build": "vite build",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "@vkruglikov/react-telegram-web-app": "^2.1.9",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "vite": "^5.4.0"
+  }
+}
