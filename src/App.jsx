@@ -114,14 +114,34 @@ function Survey() {
   const canSend = q1 !== null && q2 !== null;
 
   const handleSend = () => {
-    if (!canSend) return;
-    const payload = JSON.stringify({ q1, q2 });
     const tg = window?.Telegram?.WebApp;
-    try { tg?.HapticFeedback?.impactOccurred?.("medium"); } catch {}
-    if (tg?.sendData) tg.sendData(payload);
-    else {
-      alert("sendData недоступен (запустите из Telegram)");
-      console.log("Payload:", payload);
+    const payload = { q1, q2 };
+    const json = JSON.stringify(payload);
+    const qi = tg?.initDataUnsafe?.query_id;
+
+    try {
+      tg?.HapticFeedback?.impactOccurred?.("medium");
+    } catch {}
+
+    if (!qi && tg?.sendData) {
+      // Открыто из обычной клавиатуры → сервис-сообщение web_app_data прилетит боту
+      tg.sendData(json);
+    } else if (qi) {
+      // Открыто из inline / меню → отправляем на свой сервер
+      fetch("/tma/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query_id: qi,
+          data: payload,
+          initData: tg.initData, // для верификации подписи
+        }),
+      })
+        .then(() => tg.close?.())
+        .catch((e) => alert("Ошибка отправки: " + e?.message));
+    } else {
+      alert("Запустите Mini App из Telegram");
+      console.log(payload);
     }
   };
 
